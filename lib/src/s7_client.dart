@@ -3,7 +3,7 @@
 import 'dart:ffi';
 import 'dart:typed_data';
 
-
+import 's7.dart';
 import 'snap7_gen.dart';
 import 'package:ffi/ffi.dart';
 
@@ -17,16 +17,19 @@ class S7Client {
     return cSnap7.Cli_Connect(Client) == 0;
   }
 
+  int setPort(int port) {
+    Pointer<Int> pValue = calloc.allocate(1);
+    pValue.value = port;
+    return cSnap7.Cli_SetParam(Client, S7Const.RemotePort, pValue.cast());
+  }
 
-
-  bool ConnectTo(String RemAddress, int Rack, int Slot) {
+  bool ConnectTo(String RemAddress, int Rack, int Slot, {int port = 102}) {
+      setPort(port);
     final Address = RemAddress.toNativeUtf8();
     int res = cSnap7.Cli_ConnectTo(Client, Address.cast(), Rack, Slot);
     calloc.free(Address);
     return res == 0;
   }
-
-
 
   // int SetConnectionParams(const char *RemAddress, word LocalTSAP, word RemoteTSAP);
   //   int SetConnectionType(word ConnectionType);

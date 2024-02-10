@@ -1,4 +1,42 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:typed_data';
+
+class S7Const {
+  static const int LocalPort = 1;
+  static const int RemotePort = 2;
+  static const int PingTimeout = 3;
+  static const int SendTimeout = 4;
+  static const int RecvTimeout = 5;
+  static const int WorkInterval = 6;
+  static const int SrcRef = 7;
+  static const int DstRef = 8;
+  static const int SrcTSap = 9;
+  static const int PDURequest = 10;
+  static const int MaxClients = 11;
+  static const int BSendTimeout = 12;
+  static const int BRecvTimeout = 13;
+  static const int RecoveryTime = 14;
+  static const int KeepAliveTime = 15;
+
+  static const S7AreaPE = 0x81;
+  static const S7AreaPA = 0x82;
+  static const S7AreaMK = 0x83;
+  static const S7AreaDB = 0x84;
+  static const S7AreaCT = 0x1C;
+  static const S7AreaTM = 0x1D;
+
+ static const  S7WLBit = 0x01 ; static const
+S7WLByte = 0x02; static const
+S7WLChar = 0x03; static const
+S7WLWord = 0x04; static const
+S7WLInt = 0x05; static const
+S7WLDWord = 0x06; static const
+S7WLDInt = 0x07; static const
+S7WLReal = 0x08; static const
+S7WLCounter = 0x1C; static const
+S7WLTimer = 0x1D;
+}
 
 class S7 {
   static final Uint8List mask =
@@ -212,7 +250,6 @@ class S7 {
     int pack = bd.getInt64(0, Endian.big);
     setULInt(buffer, pos, pack);
   }
-
 
 // Lấy giá trị chuỗi (S7 String) từ mảng Buffer
   static String getString(List<int> buffer, int pos) {

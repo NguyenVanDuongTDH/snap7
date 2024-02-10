@@ -6,35 +6,41 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:snap7/src/snap7_gen.dart';
 
-class S7Server {
-  static const int LocalPort = 1;
-  static const int RemotePort = 2;
-  static const int PingTimeout = 3;
-  static const int SendTimeout = 4;
-  static const int RecvTimeout = 5;
-  static const int WorkInterval = 6;
-  static const int SrcRef = 7;
-  static const int DstRef = 8;
-  static const int SrcTSap = 9;
-  static const int PDURequest = 10;
-  static const int MaxClients = 11;
-  static const int BSendTimeout = 12;
-  static const int BRecvTimeout = 13;
-  static const int RecoveryTime = 14;
-  static const int KeepAliveTime = 15;
+import '../snap7.dart';
 
+class S7Server {
+  static const srvAreaPE = 0;
+  static const srvAreaPA = 1;
+  static const srvAreaMK = 2;
+  static const srvAreaCT = 3;
+  static const srvAreaTM = 4;
+  static const srvAreaDB = 5;
   int Server = 0;
   S7Server() {
     Server = cSnap7.Srv_Create();
+    if (Server == 0) {
+      throw "ERROR";
+    }
   }
 
-  void set(int areaCode, int index, Pointer<Uint8> db, int size) {
+  void ConnectTo(String address, {int port = 102}) {
+    setPort(port);
+    final Address = address.toNativeUtf8();
+    cSnap7.Srv_StartTo(Server, Address.cast());
+    calloc.free(Address);
+  }
+
+  void setPort(int port) {
+    SetParam(S7Const.LocalPort, port);
+  }
+
+  void registerArea(int areaCode, int index, Pointer<Uint8> db, int size) {
     cSnap7.Srv_RegisterArea(Server, areaCode, index, db.cast(), size);
   }
 
   void start({int port = 102}) {
     if (port != 102) {
-      SetParam(LocalPort, port);
+      SetParam(S7Const.LocalPort, port);
     }
 
     cSnap7.Srv_Start(Server);
@@ -46,13 +52,23 @@ class S7Server {
     cSnap7.Srv_SetParam(Server, ParamNumber, pValue.cast());
   }
 
-  Pointer<TSrvEvent>? pickEvent() {
+  Pointer<TSrvEvent>? _pickEvent() {
     Pointer<TSrvEvent> event = calloc.allocate<TSrvEvent>(1);
     Pointer<Int> ready = calloc.allocate<Int>(1);
     final code = cSnap7.Srv_PickEvent(Server, event, ready);
-    // check_error(code);
+    check_error(code, context: "server");
     if (ready.value > 0) {
+      calloc.free(ready);
       return event;
+    } else {
+      return null;
+    }
+  }
+
+  String? getEvent() {
+    final event = _pickEvent();
+    if (event != null) {
+      return event_text(event);
     } else {
       return null;
     }
@@ -61,11 +77,11 @@ class S7Server {
   static String event_text(Pointer<TSrvEvent> event) {
     Pointer<Uint8> text = calloc.allocate(1024);
     final error = cSnap7.Srv_EventText(event, text.cast(), 1024);
-    // check_error(error);
+    check_error(error);
     Uint8List res = text.asTypedList(1024);
-    String decodedString =
-        String.fromCharCodes(res).toString();
+    String decodedString = String.fromCharCodes(res).toString();
     calloc.free(text);
+    calloc.free(event);
     return decodedString;
   }
 
