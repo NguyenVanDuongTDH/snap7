@@ -1,18 +1,24 @@
 import 'dart:typed_data';
 import 'package:snap7/snap7.dart';
 
+
 class PLC_DB {
   final S7Client __plc__;
   Uint8List? __bytes__;
-  final int __dbNumber__ = 1;
-  final int ___lenght__ = 22;
+  int __dbNumber__;
+  final int ___lenght__ = 18;
 
-  PLC_DB(S7Client plc) : __plc__ = plc;
+  PLC_DB(S7Client plc, int dbNumber)
+      : __plc__ = plc,
+        __dbNumber__ = dbNumber;
+
 
   bool read() {
     __bytes__ = __plc__.DBRead(__dbNumber__, 0, ___lenght__);
     return __bytes__ != null;
   }
+
+
 
   bool get b => S7.getBit(__bytes__!, 0, 0) == 1;
 
@@ -21,6 +27,7 @@ class PLC_DB {
     __plc__.DBWrite(__dbNumber__, 0, __bytes__!.sublist(0, 0 + 1));
   }
 
+
   bool get a => S7.getBit(__bytes__!, 0, 1) == 1;
 
   set a(bool value) {
@@ -28,20 +35,20 @@ class PLC_DB {
     __plc__.DBWrite(__dbNumber__, 0, __bytes__!.sublist(0, 0 + 1));
   }
 
-  Duration get Static_1 => Duration(milliseconds: S7.getUDInt(__bytes__!, 2));
+  Duration get Static_1 => S7.getTime(__bytes__!, 2);
 
   set Static_1(Duration value) {
-    S7.setUDInt(__bytes__!, 2, value.inMilliseconds);
-    __plc__.DBWrite(__dbNumber__, 2, __bytes__!.sublist(2, 2 + 4));
+    
+    S7.setTime(__bytes__!, 2 , value);
+    __plc__.DBWrite(__dbNumber__, 2,  __bytes__!.sublist(2 , 2 + 4));
   }
-
   int get c => S7.getInt(__bytes__!, 6);
 
   set c(int value) {
-    S7.setInt(__bytes__!, 6, value);
-    __plc__.DBWrite(__dbNumber__, 6, __bytes__!.sublist(6, 6 + 2));
+    
+    S7.setInt(__bytes__!, 6 , value);
+    __plc__.DBWrite(__dbNumber__, 6,  __bytes__!.sublist(6 , 6 + 2));
   }
-
   ArrayPLCValue<bool> get bbb => __bbb();
   ArrayPLCValue<bool> __bbb() {
     ArrayPLCValue<bool> _array = ArrayPLCValue<bool>(length: 15 + 1, offset: 8);
@@ -59,11 +66,9 @@ class PLC_DB {
     };
     return _array;
   }
-
   ArrayPLCValue<bool> get cc => __cc();
   ArrayPLCValue<bool> __cc() {
-    ArrayPLCValue<bool> _array =
-        ArrayPLCValue<bool>(length: 15 + 1, offset: 10);
+    ArrayPLCValue<bool> _array = ArrayPLCValue<bool>(length: 15 + 1, offset: 10);
     _array.getFunc = (index, offset) {
       int l = ArrayPLCValue.boolOffset(offset, index)[0];
       int r = ArrayPLCValue.boolOffset(offset, index)[1];
@@ -78,30 +83,30 @@ class PLC_DB {
     };
     return _array;
   }
-
-  ArrayPLCValue<int> get bytes => __bytes();
-  ArrayPLCValue<int> __bytes() {
-    ArrayPLCValue<int> _array = ArrayPLCValue<int>(length: 1 + 1, offset: 12);
-    _array.getFunc = (index, offset) {
+ ArrayPLCValue<int> get bytes => __bytes();
+ ArrayPLCValue<int> __bytes(){
+    ArrayPLCValue<int> _array = ArrayPLCValue<int>(length: 1 + 1,offset: 12);
+    _array.getFunc = (index, offset){
+     int _size = 1;
+     int _offset = offset + (_size * index);
+      return  S7.getByte(__bytes__!, _offset);
+    };
+    _array.setFunc = (index, offset, value){
       int _size = 1;
       int _offset = offset + (_size * index);
-      return S7.getByte(__bytes__!, _offset);
-    };
-    _array.setFunc = (index, offset, value) {
-      int _size = 1;
-      int _offset = offset + (_size * index);
+     
 
-      S7.setByte(__bytes__!, _offset, value);
-      __plc__.DBWrite(
-          __dbNumber__, _offset, __bytes__!.sublist(_offset, _offset + _size));
+    S7.setByte(__bytes__!, _offset, value);
+    __plc__.DBWrite(__dbNumber__, _offset,  __bytes__!.sublist(_offset, _offset + _size) );
     };
-    return _array;
+    return _array; 
   }
-
   int get o => S7.getLInt(__bytes__!, 14);
 
   set o(int value) {
-    S7.setLInt(__bytes__!, 14, value);
-    __plc__.DBWrite(__dbNumber__, 14, __bytes__!.sublist(14, 14 + 8));
+    
+    S7.setLInt(__bytes__!, 14 , value);
+    __plc__.DBWrite(__dbNumber__, 14,  __bytes__!.sublist(14 , 14 + 8));
   }
+
 }

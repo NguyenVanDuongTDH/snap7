@@ -26,16 +26,16 @@ class S7Const {
   static const S7AreaCT = 0x1C;
   static const S7AreaTM = 0x1D;
 
- static const  S7WLBit = 0x01 ; static const
-S7WLByte = 0x02; static const
-S7WLChar = 0x03; static const
-S7WLWord = 0x04; static const
-S7WLInt = 0x05; static const
-S7WLDWord = 0x06; static const
-S7WLDInt = 0x07; static const
-S7WLReal = 0x08; static const
-S7WLCounter = 0x1C; static const
-S7WLTimer = 0x1D;
+  static const S7WLBit = 0x01;
+  static const S7WLByte = 0x02;
+  static const S7WLChar = 0x03;
+  static const S7WLWord = 0x04;
+  static const S7WLInt = 0x05;
+  static const S7WLDWord = 0x06;
+  static const S7WLDInt = 0x07;
+  static const S7WLReal = 0x08;
+  static const S7WLCounter = 0x1C;
+  static const S7WLTimer = 0x1D;
 }
 
 class S7 {
@@ -288,5 +288,13 @@ class S7 {
     for (int i = 0; i < size; i++) {
       buffer[pos + i] = value.codeUnitAt(i);
     }
+  }
+
+  static Duration getTime(List<int> buffer, int i) {
+    return Duration(milliseconds: getDInt(buffer, i));
+  }
+
+  static void setTime(List<int> buffer, int pos, Duration value) {
+    setUInt(buffer, pos, value.inMilliseconds);
   }
 }
