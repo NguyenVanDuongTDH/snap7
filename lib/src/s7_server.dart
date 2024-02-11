@@ -23,7 +23,7 @@ class S7Server {
     }
   }
 
-  void ConnectTo(String address, {int port = 102}) {
+  void startTo(String address, {int port = 102}) {
     setPort(port);
     final Address = address.toNativeUtf8();
     cSnap7.Srv_StartTo(Server, Address.cast());
@@ -74,7 +74,7 @@ class S7Server {
     }
   }
 
-  static String event_text(Pointer<TSrvEvent> event) {
+  String event_text(Pointer<TSrvEvent> event) {
     Pointer<Uint8> text = calloc.allocate(1024);
     final error = cSnap7.Srv_EventText(event, text.cast(), 1024);
     check_error(error);

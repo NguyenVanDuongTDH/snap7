@@ -37,6 +37,8 @@ class PLC_DB {
 
   Duration get Static_1 => S7.getTime(__bytes__!, 2);
 
+
+
   set Static_1(Duration value) {
     
     S7.setTime(__bytes__!, 2 , value);
