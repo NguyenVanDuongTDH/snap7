@@ -9,12 +9,14 @@ import 'db.dart';
 
 Future<void> main() async {
   S7Client client = S7Client();
-  client.setPort(1402);
-  print(client.ConnectTo("192.168.1.6", 0, 1));
-  
-  while(true){
-    client.DBRead(1, 0, 10);
-  }
+  int begin = DateTime.now().millisecondsSinceEpoch;
+  bool c = client.ConnectTo("192.168.1.6", 0, 1, port: 5505);
+  var fina = DateTime.now().millisecondsSinceEpoch - begin;
+  print(fina);
+   begin = DateTime.now().millisecondsSinceEpoch;
+  print(client.DBRead(1, 0, 10));
+     fina = DateTime.now().millisecondsSinceEpoch - begin;
+  print(fina);
   client.Disconnect();
 
   // S7Server s7server = S7Server();

@@ -26,6 +26,7 @@ class S7Client {
   bool ConnectTo(String RemAddress, int Rack, int Slot, {int? port}) {
     port != null ? setPort(port) : null;
     final Address = RemAddress.toNativeUtf8();
+
     int res = cSnap7.Cli_ConnectTo(Client, Address.cast(), Rack, Slot);
     calloc.free(Address);
     return res == 0;
